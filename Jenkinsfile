@@ -3,11 +3,11 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven-3.9'
+        maven 'maven'
     }
 
     environment {
-        SONAR_PROJECT_KEY = 'demo-java-app'
+        SONAR_PROJECT_KEY = 'sonar-project'
     }
 
     stages {
@@ -15,13 +15,13 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/Ishikapbhatt/demo-java-sonar.git'
+                    url: 'https://github.com/nutannavale63/sonar.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh '''
+                bat '''
                     echo "Building Java application..."
                     mvn clean package
                 '''
@@ -30,12 +30,10 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh '''
+                withSonarQubeEnv('sonarqube') {
+                    bat '''
                         echo "Running SonarQube analysis..."
-
-                        mvn sonar:sonar \
-                          -Dsonar.projectKey=${SONAR_PROJECT_KEY}
+                        mvn sonar:sonar -Dsonar.projectKey=%SONAR_PROJECT_KEY%
                     '''
                 }
             }
